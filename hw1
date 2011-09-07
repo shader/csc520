@@ -1,0 +1,31 @@
+1) Describe a PEAS specification for the following:
+
+   1. A bot to display advertisements in a search engine (eg. Bing, Google etc.)
+   2. An industrial robot (eg. one which can detect surface defects on automobile body in an assembly line).
+   3. A recommendation system (eg. Amazon book suggestion system).
+
+2)
+   1. Describe a PEAS specification for Watson.
+   2. Discuss at least three aspects of the Jeopardy problem domain together with the hardware and/or software design choices in Watson that are rational given those problem aspects. 
+
+3) Suppose Mr. Wuf is an agent who will help us move things from one place to another. Mr. Wuf is assigned a task of transferring a set of boxes one-by-one by lifting them from location A and placing them in location B inside a building. Mr. Wuf's sensors can tell it whether the agent is near its destination or not. The room has stationary obstacles whose locations are not initially known. If Mr. Wuf bumps into an obstacle, it will drop the box it is carrying. Some boxes contain fragile goods which will break if dropped. The environment contains obstacle-free paths, of various lengths. Answer the following questions about Mr. Wuf.
+
+   1. Define a PEAS specification for Mr. Wuf.
+   2. Is it sufficient for Mr. Wuf to be simple reflex ? Why or why not ?
+   3. Mr. Wuf likes to move randomly. Would this help or not? What are the drawbacks?
+   4. Suggest one improvement to Mr. Wuf's design. Does your improvement have drawbacks? 
+
+4) Consider a state space where the start state is number 1 and each state k has two successors: numbers 2k and 2k + 1.
+
+   1. Draw the portion of the state space for states 1 to 15.
+   2. Suppose the goal state is 11. List the order in which nodes will be visited for breadth-first search, depth-limited search with limit 3, and iterative deepening search.
+   3. How well would bidirectional search work on this problem? What is the branching factor in each direction of the bidirectional search?
+   4. Does the answer to (c) suggest a reformulation of the problem that would allow you to solve the problem of getting from state 1 to a given goal state with almost no search? 
+
+5) In a language of your choice (Java or C++), implement the Depth-First Search and Breadth-First Search algorithms. Your code should keep track of nodes expanded and should be able to compute the length of this list. Then run your algorithms on the Romanian road map. To save a bit of typing, you may use this file for the cities and roads: [roads.pl]. This is a Prolog source file, and this assignment does not use Prolog, so you will have to modify it for use with your code. Notice also that Assignment 1 does not use the road distances, or the longitude/latitude of the cities.
+
+   1. Consider the path from Arad to Bucharest and the path from Bucharest to Arad. Run your algorithms and show the paths returned by DFS and BFS results for each case.
+      How do the solution paths compare for the two algorithms? Give an explanation for what you observe.
+   2. Is there a case where Depth-First performs worse than Breadth-First (in terms of number of cities visited in the path, not the distance) ? If yes, what is the case? If not, explain why.
+   3. Is there a case where Breadth-First performs worse than Depth-First (in terms of number of cities visited in the path, not the distance)? If yes, what is the case? If not, explain why.
+   4. For the same graph, perform a hand-execution of Depth-First Iterative Deepening (DFID) with increment and cutoff initialized to 1, starting at Oradea. List the nodes in the order expanded and the state of the datastructure for the first five iterations of DFID. Expand the nodes alphabetically and insert them in nondecreasing alphabetical order. Compare this list with the list of expansions in Breadth-First Search.
