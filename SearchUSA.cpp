@@ -1,3 +1,5 @@
+//SearchUSA.cpp created by Samuel Christie (schrist) on 9/28/2011
+
 #include <iostream>
 #include <cmath>
 #include <cstring>
@@ -135,6 +137,20 @@ void print_queue(deque<path*> q) {
   cout.flush();
 }
 
+void greedy_add_paths(deque<path*> &open, deque<path*> &closed, deque<path*> paths) {
+  deque<path*>::iterator i,j;
+  
+  //add neighbors to open list, duplicates included
+  for(i=paths.begin(); i!=paths.end(); i++) {
+    j = find_if(closed.begin(), closed.end(), pathByName(*i));
+    if (j != closed.end()) continue; //neighbor already in closed, don't add
+    j = find_if(open.begin(), open.end(), pathByName(*i));
+    if (j == open.end()) { //not a duplicate, safe to add
+      open.push_back(*i); //neither already closed nor dup, add to open list
+    }
+  }
+}
+
 void add_paths(deque<path*> &open, deque<path*> &closed, deque<path*> paths) {
   deque<path*>::iterator i,j;
   
@@ -182,15 +198,80 @@ soln *astar(city* start, city* dest) {
 
     sort(open.begin(), open.end(), astar_compare);
   }
+  cerr << "Couldn't find path\n";
+  exit(1);
+}
+
+bool greedy_compare(path* p1, path* p2) {
+  return distance(p1->end, goal) < distance(p2->end, goal);
 }
 
 soln* greedy(city* start, city* dest) {
-  deque<path*>::iterator i,j;
   deque<path*> open,closed;
   goal = dest;
+
+  path* s = new path;
+  s->prev = NULL;
+  s->end = start;
+  s->cost = 0;
+  open.push_back(s);
+
+  while(!open.empty()) {
+    path *cur = open.front();
+    open.pop_front();
+    closed.push_back(cur);
+
+    if (cur->end->name == goal->name) {
+      soln* s = new soln;
+      s->p = cur;
+      s->closed = closed;
+      return s;
+    }
+
+    deque<path*>n = neighbors(cur);
+
+    greedy_add_paths(open,closed,n);
+
+    sort(open.begin(), open.end(), greedy_compare);
+  }
+  cerr << "Couldn't find path\n";
+  exit(1);
+}
+
+bool dynamic_compare(path* p1, path* p2) {
+  return p2->cost < p2->cost;
 }
 
 soln* dynamic(city* start, city* dest) {
+    deque<path*> open,closed;
+  goal = dest;
+
+  path* s = new path;
+  s->prev = NULL;
+  s->end = start;
+  s->cost = 0;
+  open.push_back(s);
+
+  while(!open.empty()) {
+    path *cur = open.front();
+    open.pop_front();
+    closed.push_back(cur);
+
+    if (cur->end->name == goal->name) {
+      soln* s = new soln;
+      s->p = cur;
+      s->closed = closed;
+      return s;
+    }
+
+    deque<path*>n = neighbors(cur);
+
+    add_paths(open,closed,n);
+
+    sort(open.begin(), open.end(), dynamic_compare);
+  }
+  cerr << "Couldn't find path\n";
+  exit(1);
 }
 
 void print_path(path* p) {
