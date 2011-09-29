@@ -135,7 +135,7 @@ void print_queue(deque<path*> q) {
   cout.flush();
 }
 
-void add_paths(deque<path*> open, deque<path*> closed, deque<path*> paths) {
+void add_paths(deque<path*> &open, deque<path*> &closed, deque<path*> paths) {
   deque<path*>::iterator i,j;
   
   //add neighbors to open list, duplicates included
@@ -155,7 +155,6 @@ void add_paths(deque<path*> open, deque<path*> closed, deque<path*> paths) {
 }
 
 soln *astar(city* start, city* dest) {
-  deque<path*>::iterator i,j;
   deque<path*> open,closed;
   goal = dest;
 
