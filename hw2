@@ -1,0 +1,141 @@
+[20 points]
+<a href=http://en.wikipedia.org/wiki/Tic_tac_toe>Tic-tac-toe</a> (also known as Noughts and Crosses)
+is a two-person, zero-sum game, in which player X and player O alternate placing their symbols in
+one of the blank spaces in a 3-by-3 grid that looks like this:
+
+<p>
+<table>
+
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+</table>
+
+<p>
+The first player to place three of his symbols in a row -- horizontally, vertically, or diagonally --
+wins.
+
+<ol>
+<li>
+[10 points]
+Beginning from the position
+
+<p>
+<table>
+<tr><td>X</td><td>|</td><td>X</td><td>|</td><td><br></td></tr>
+
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td>O</td><td>|</td><td><br></td><td>|</td><td>X</td></tr>
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+
+<tr><td><br></td><td>|</td><td>O</td><td>|</td><td><br></td></tr>
+</table>
+
+with O's turn to move, construct by hand
+the game-tree for the rest of the game.
+Assume the search horizon is the end of the game on all branches.
+
+<p>
+Hint: You can save a lot of work by taking advantage of symmetry.  For example,
+
+<table>
+<tr>
+<td>
+<table>
+<tr><td><br></td><td>|</td><td>X</td><td>|</td><td><br></td></tr>
+
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+
+</table>
+</td>
+<td>,</td>
+<td>
+<table>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td>X</td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+</table>
+</td>
+<td>,</td>
+<td>
+<table>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td><br></td><td>|</td><td>X</td><td>|</td><td><br></td></tr>
+
+</table>
+</td>
+<td>, and</td>
+<td>
+<table>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td>X</td></tr>
+
+<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+<tr><td><br></td><td>|</td><td><br></td><td>|</td><td><br></td></tr>
+</table>
+</td>
+</tr>
+</table>
+
+are all the same position because of symmetry.
+
+<li>
+[5 points]
+Suppose the static evaluation function scores
+a win for O as +1, a draw as 0, and a loss for O as -1.
+At each level of your sketch of the game tree, indicate the value of each node based on its children.
+Indicate the best next move for O.
+
+
+<li>
+[5 points]
+Now use &alpha;-&beta; pruning.
+At each level of your sketch of the game tree,
+indicate the value of the nodes and indicate any nodes that would be pruned.
+Explicitly indicate the final value of the &alpha;-&beta; interval is for each node.
+Indicate the best next move for O.
+</ol>
+
+<br><br>
+<hr>
+<li>[30 points]
+Consider the following English sentences.<br><br>
+
+	<ul>
+
+	<li> One or another customs official searches everyone entering the country
+             who is not a VIP.
+	<li> Some drug dealers entered the country and they were searched only by drug dealers.
+	<li> No drug dealer was a VIP.
+	</ul>
+<br><br>
+	<ol>
+	<li> [12 points] Convert the sentences into first order predicate logic.
+Use the following lexicon:<br>
+<pre>
+Predicates: vip(X)         -- X is a VIP
+            entered(X)     -- X entered the country
+            customs(X)     -- X is customs official
+            dealer(X)      -- X is a drug dealer
+            searched(X, Y) -- Y searched X (watch the argument order)
+
+</pre>
+
+	<li> [9 points] Convert the logic statements into CNF.
+	<li> [9 points] Using resolution, prove that
+"At least one of the customs officials was a drug dealer."
+	</ol>

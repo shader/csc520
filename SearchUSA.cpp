@@ -1,17 +1,22 @@
 #include <iostream>
 #include <cmath>
 #include <cstring>
+#include <deque>
+#include <algorithm>
 using namespace std;
 
 #define PI 3.14159265
+#define NUMCITIES 200
+#define NUMROADS 300
 
 struct city
 {
   string name;
   double lat, lon;
 };
-city* cities[200];
+city* cities[NUMCITIES];
 int cur_city=0;
+city* goal;
 
 void make_city(string name, double lat, double lon)
 {  
@@ -26,7 +31,7 @@ void make_city(string name, double lat, double lon)
 city* find_city(string name)
 {
   city *city = NULL;
-  for(int i=0;i<200;i++)
+  for(int i=0;i<NUMCITIES;i++)
     if(cities[i] != NULL && cities[i]->name == name)
       city = cities[i];
   return city;
@@ -35,9 +40,9 @@ city* find_city(string name)
 struct road
 {
   city *a, *b;
-  int len;
+  double len;
 };
-road* roads[300];
+road* roads[NUMROADS];
 int cur_road=0;
 
 void make_1way(city *a, city *b, int len)
@@ -61,6 +66,24 @@ void make_road(string name1, string name2, int len)
   make_1way(a,b,len);
   make_1way(b,a,len);
 }
+void make_cities();
+void make_roads();
+
+struct path
+{
+  path *prev;
+  city *end;
+  double cost;
+};
+
+struct pathByName {
+  path* item;
+  pathByName(path* it) { item = it; }
+  bool operator()(path* p) {
+    bool val = (p->end->name == item->end->name);
+    return val;
+  }
+};
 
 double distance(city* city1, city* city2)
 {
@@ -72,18 +95,113 @@ double distance(city* city1, city* city2)
   return sqrt(pow(londist,2) + pow((city2->lat - city1->lat) * 69.5, 2));
 }
 
-void make_cities();
-void make_roads();
+deque<path*> neighbors(path* cur) {
+  deque<path*> n;
+  for (int i=0; i<NUMROADS; i++) {
+    road *r = roads[i];
+    if (r != NULL && r->a->name == cur->end->name) {
+      path *p = new path;
+      p->end = r->b;
+      p->prev = cur;
+      p->cost = cur->cost + r->len;
+      n.push_back(p);
+    }
+  }
+  return n;
+}
 
-int main()
+bool astar_compare(path* p1, path* p2) {
+  return (p1->cost + distance(p1->end, goal)) < (p2->cost + distance(p2->end, goal));
+}
+
+path *astar(string start, string dest) {
+  deque<path*>::iterator i,j;
+  deque<path*> open,closed;
+  goal = find_city(dest);
+  if (goal == NULL)
+    cerr << "Error: goal city " << dest << " could not be found.";
+
+  path* s = new path;
+  s->prev = NULL;
+  s->end = find_city(start);
+  s->cost = 0;
+  open.push_back(s);
+
+  if (s->end == NULL)
+    cerr << "Error: start city " << start << " could not be found.";
+  
+  while(!open.empty()) {
+    path *cur = open.front();
+    cout << cur->end->name;
+    cout.flush();
+    open.pop_front();
+    closed.push_back(cur);
+
+    if (cur->end->name == goal->name) {
+      cout << "Found goal!";
+      return cur;
+    }
+
+    deque<path*>n = neighbors(cur);
+
+    //add neighbors to open list, duplicates included
+    open.insert(open.end(), n.begin(), n.end());
+
+    //remove paths that go to same city
+    for(i=open.begin(); i!=open.end();) {
+      if (*i == NULL) continue;
+      j = find_if(closed.begin(), closed.end(), pathByName(*i));
+      if (j != closed.end()) {
+        open.erase(i);
+      } else {
+        j = find_if(open.begin(), open.end(), pathByName(*i));
+        if (j != open.end() && j != i) { //found match, not the same item
+          if ((*i)->cost < (*j)->cost) {
+            open.erase(j);
+          } else {
+            open.erase(i);
+          }
+        } else {
+          i++;
+        }
+      }
+    }
+
+    sort(open.begin(), open.end(), astar_compare);
+  }
+}
+
+void print_path(path* p) {
+  deque<string> names;
+  while(p != NULL && p->end != NULL) {
+    cout << p->end->name; cout.flush();
+    names.push_front(p->end->name);
+    p = p->prev;
+  }
+  while(!names.empty()) {
+    string n = names.front();
+    names.pop_front();
+    cout << n << ", ";
+  }
+}
+
+int main (int argc, char* argv[])
 {
   make_cities();
   make_roads();
+
+  if (argc < 4) {
+    cout << "Please use ./a.out [astar|greedy|dynamic] [start] [destination]\n";
+  } else if (strcmp(argv[1], "astar")==0) {
+    print_path(astar(argv[2], argv[3]));
+  } else {
+    cout << "Please use ./a.out [astar|greedy|dynamic] [start] [destination]\n";
+  }
 }
 
 void make_cities()
 {
-  for(int i=0;i<200;i++)
+  for(int i=0;i<NUMCITIES;i++)
     cities[i]=NULL;
 
   make_city("albanyGA", 31.58, 84.17);
@@ -202,6 +320,9 @@ void make_cities()
 
 void make_roads()
 {
+  for(int i=0;i<NUMROADS;i++)
+    roads[i]=NULL;
+
   make_road("albanyNY", "montreal", 226);
   make_road("albanyNY", "boston", 166);
   make_road("albanyNY", "rochester", 148);

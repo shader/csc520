@@ -1,26 +1,114 @@
 1) Describe a PEAS specification for the following:
 
    1. A bot to display advertisements in a search engine (eg. Bing, Google etc.)
+      Performance:
+        The most common performance measure for an ad bot would be the number of clicks per million views, but it could also be measured by actual conversions per view, or non-bounce visits per view (bounce being defined as any page view that lasts less than a certain number of seconds)
+      Environment:
+        The webpage containing search results and other ads. This is a fully observable environment, since the ad bot is presumably run by the same server that generated the rest of the webpage. It is single agent, since the only agent affecting the page is the ad service itself. The environment is deterministic, since the final output of the webpage is completely determined by the search results (which are inputs to the ad bot) and the ad bot itself. This environment is episodic, since each ad bot takes as input one page and outputs one set of ads at a time. The environment is static relative to the ad bot, since all of the search results are determined before the ad bot selects its ads. This environment is discrete, because the input and output are both text and html, which are discrete digital information formats.
+      Actuators:
+        This bot can affect its surroundings by displaying the content of its ads.
+      Sensors:
+        The inputs to this bot are the search results, search query, and the user's search and viewing history.
    2. An industrial robot (eg. one which can detect surface defects on automobile body in an assembly line).
+      Performance:
+        If the robot's job is to detect surface defects which can then be repaired by other means, then its performance is based on the time it takes to locate a defect, and the accuracy with which it detects them. Both false positives and false negatives could result in expensive waste or recalls respectively.
+      Environment:
+        The environment for this bot is the area around the assembly line, and the products on it.
+        Partially observable, since the cameras and defect detection sensors cannot give perfect information about the environment.
+        Single agent, because only the one robot needs to be working on detecting defects in a particular object at a time.
+        Stochastic, because the robot is acting in the real world and things can change outside of the robots control.
+        Sequential, because the robot needs to progressively scan the object and gain more information about one object over time before making a final decision. Thus, it needs to make intermediate actions to move the scanner, rotate the object, etc.
+        Dynamic, since the robot is acting in the real world, and not the only thing that could theoretically affect the current object.
+        Continuous, since it is trying to examine an actual physical object, and needs to move it or its sensors continuously in space, taking in continuous signals over time.
+      Actuators:
+        This robot can theoretically move its scanner to look at multiple sides of the target object, and also manipulate the object itself. It can also signal the rest of the assembly line when it finishes scanning, and whether or not the object has a defect and what kind.
+      Sensors:
+        This robot has position sensors for its scanner/camera and the object. It also has one or more sensors for detecting the actual defects in the object (such as infrared scanner, xray, camera, sonar, etc.)
+
    3. A recommendation system (eg. Amazon book suggestion system).
+      Performance:
+        The recommendation systems performance can be measured by the number of times a customer buys the recommended item per display, or the number of visits to the product page per view.
+      Environment:
+        This agents environment is the page for a particular product on the store. This includes information about the product, its name, company, category, reviews, user search query, and user view history, and history of other users on the website.
+        Single agent, since the only bot affecting the page is the recommendation system itself.
+        Fully observable, since the bot has access to any of the information on the page, because it is run by the same company that generated the page.
+        Deterministic, because the bots actions (choices of products to display) determines the final appearance of the web page.
+        Episodic, because each page view is handled separately. However, the system still learns from and uses the history of the user(s) in picking recommendations.
+        Static, because the page doesn't change while the bot is calculating what to recommend. The content and history are all available before the bot starts calculating.
+        Discrete, because it is working with static digital information (namely, user history and product info).
+      Actuators:
+        This robot can affect its environment through the display of recommendations on the web page.
+      Sensors:
+        This robot takes as input the contents of the page, search query, user history, and statistical data gathered about the users of the site.
 
 2)
    1. Describe a PEAS specification for Watson.
-   2. Discuss at least three aspects of the Jeopardy problem domain together with the hardware and/or software design choices in Watson that are rational given those problem aspects. 
+      Performance:
+        Watson's goal is to win at Jeopardy. In order to do so however, it has several intermediate goals which can also be used as performance measures. These include a fast response time, correct answers, and picking a good bid to get profit without undue risk on the final jeopardy question.
+      Environment:
+        The current question, question category and value, and the other contestants make up the environment in which Watson is competing.
+        Multi-agent. Watson is competing with several other contestants to answer the question in a timely fashion.
+        Fully observable, because Watson recieves the question and category info directly as text.
+        Stochastic, because the other agents can affect the outcome of the round.
+        Sequential, because while all of the questions can be handled separately, the category information and value, and Watson's current earnings are all important variables that change over time and effect future questions.
+        Dynamic, because the other players can answer the question while Watson is still thinking.
+        Discrete, because all of the information is digital and there is only one correct answer. However, that answer is often a complicated abstract concept that takes a lot of calculation for Watson to arrive at. It's possible that it could be considered continuous because of the probabilistic fashion in which Watson evaluates possible answers.
+
+   2. Discuss at least three aspects of the Jeopardy problem domain together with the hardware and/or software design choices in Watson that are rational given those problem aspects.
+      1. Competitors answer in ~1-2 seconds. This means that Watson needs to be efficient not just accurate. This was reflected in Watson's design by the fact that it was built as a massively parallel supercomputer.
+      2. Many question types. There are several thousand catalogued question types used on Jeopardy, any of which can be asked at any time. However no individual type makes up more than a fraction of a percent of the whole. This means that Watson cannot be programmed to specifically answer a particular kind of question or set of questions, and still perform well. Thus, Watson was build as a probabilistic inference engine, and was trained on large sets of varied data before competing, to ensure that it had the maximum chance of being able to handle any question thrown at it.
+      3. None of the contestants are allowed access to outside information during the game. This was accounted for in Watson's design by the large and efficient of information which was generated before the game was played. Without the database, it couldn't have answered many fact based questions. However, given that it needed a large built in database, it needed to be designed in a very efficient and parallel manner, in order to find the possible answers in a short time as mentioned above.
 
 3) Suppose Mr. Wuf is an agent who will help us move things from one place to another. Mr. Wuf is assigned a task of transferring a set of boxes one-by-one by lifting them from location A and placing them in location B inside a building. Mr. Wuf's sensors can tell it whether the agent is near its destination or not. The room has stationary obstacles whose locations are not initially known. If Mr. Wuf bumps into an obstacle, it will drop the box it is carrying. Some boxes contain fragile goods which will break if dropped. The environment contains obstacle-free paths, of various lengths. Answer the following questions about Mr. Wuf.
 
    1. Define a PEAS specification for Mr. Wuf.
+      Performance:
+        Mr. Wuf's performance is based on how quickly he can move the boxes from A to B, with as few boxes dropped (and thus broken) as possible.
+      Environment:
+        The environment includes the positions A and B, the obstacles in Mr. Wufs path, and the boxes he needs to move.
+        This is a single agent environment, since Mr. Wuf is the only agent moving boxes.
+        Partially observable, since he only has information about how far he is from the goal, and whether or not he just ran into an obstacle.
+        Stochastic, because Mr. Wuf's actions do not necessarily determine all of the changes to the environment. It is possible that he bumps into a previously undiscovered obstacle and drops a box, for instance.
+        Sequential, because Mr. Wuf needs to keep track of his position, and whether or not he's carrying a box. He uses this information to work progressively towards the goal over time and multiple actions.
+        Continuous. Since Mr. Wuf is working in a real environment, his position and the location of the end points and boxes are continous variables.
+      Actuators:
+        Mr. Wuf can move around, and pick up or put down boxes.
+      Sensors:
+        Mr. Wuf can sense whether or not he is near the goal, and whether or not he is carrying a box.
+
    2. Is it sufficient for Mr. Wuf to be simple reflex ? Why or why not ?
+      No. If he works by simple reflex, he will only detect the obstacles by bumping into them while carrying a box, thus dropping it with a chance of breaking the contents.
+      There is also a strong possibility that he will not be able to find a path with simple reflexive methods of pathfinding.
    3. Mr. Wuf likes to move randomly. Would this help or not? What are the drawbacks?
-   4. Suggest one improvement to Mr. Wuf's design. Does your improvement have drawbacks? 
+      This would help if the code he uses to find paths is too simple (i.e. reflex based), because it prevents him from getting stuck in corners, etc. However, it has the major drawback of nearly guaranteeing that he will run into an obstacle and dropping a box. It would be much better if Mr. Wuf could use a better path discovery system than simple random motion, and avoid dropping boxes.
+   4. Suggest one improvement to Mr. Wuf's design. Does your improvement have drawbacks?
+      Mr. Wuf would perform much better if he could explore the environment before carrying any boxes, and find an obstacle-free path, hopefully a short one. This way, he can quickly navigate to and from the endpoints without bumping into obstacles and breaking boxes, or backtracking.
+
 
 4) Consider a state space where the start state is number 1 and each state k has two successors: numbers 2k and 2k + 1.
 
-   1. Draw the portion of the state space for states 1 to 15.
-   2. Suppose the goal state is 11. List the order in which nodes will be visited for breadth-first search, depth-limited search with limit 3, and iterative deepening search.
-   3. How well would bidirectional search work on this problem? What is the branching factor in each direction of the bidirectional search?
-   4. Does the answer to (c) suggest a reformulation of the problem that would allow you to solve the problem of getting from state 1 to a given goal state with almost no search? 
+   a. Draw the portion of the state space for states 1 to 15.
+
+                         __1__
+                       _2_   _3_
+                      4   5 6   7
+
+      It looks like a binary tree, with each node having two children.
+
+   b. Suppose the goal state is 11. List the order in which nodes will be visited for breadth-first search, depth-limited search with limit 3, and iterative deepening search.
+      1) Breadth first:
+         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11.
+      2) Depth limited search, limit 3:
+         1, 2, 4, 8, 9, 5, 10, 11
+      3) Iterative deepening:
+         1
+         1, 2, 3
+         1, 2, 4, 5, 3, 6, 7
+         1, 2, 4, 8, 9, 5, 10, 11
+   c. How well would bidirectional search work on this problem? What is the branching factor in each direction of the bidirectional search?
+      Bidirectional search would work quite well. Because it is a simple binary tree, there is only one parent for each node. Thus, while the branching factor for the forward direction is 2, the branching factor for the backwards direction is only 1. Thus, it would only take 3 steps to find a path because it would always expand backwards, as that direction only has one available node.
+   4. Does the answer to (c) suggest a reformulation of the problem that would allow you to solve the problem of getting from state 1 to a given goal state with almost no search?
+      Yes. By starting at the goal state and iteratively expanding the current node's parent, a direct and optimal path can be found without ever expanding any nodes not on the path.
 
 5) In a language of your choice (Java or C++), implement the Depth-First Search and Breadth-First Search algorithms. Your code should keep track of nodes expanded and should be able to compute the length of this list. Then run your algorithms on the Romanian road map. To save a bit of typing, you may use this file for the cities and roads: [roads.pl]. This is a Prolog source file, and this assignment does not use Prolog, so you will have to modify it for use with your code. Notice also that Assignment 1 does not use the road distances, or the longitude/latitude of the cities.
 
