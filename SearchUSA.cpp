@@ -85,6 +85,15 @@ struct pathByName {
   }
 };
 
+int path_count(path* p) {
+  int i=0;
+  while(p != NULL) {
+    p = p->prev;
+    i++;
+  }
+  return i;
+}
+
 double distance(city* city1, city* city2)
 {
   //calculate average latitude
@@ -110,71 +119,84 @@ deque<path*> neighbors(path* cur) {
   return n;
 }
 
+struct soln {
+  path* p;
+  deque<path*> closed;  
+};
+
 bool astar_compare(path* p1, path* p2) {
   return (p1->cost + distance(p1->end, goal)) < (p2->cost + distance(p2->end, goal));
 }
 
-path *astar(string start, string dest) {
+void print_queue(deque<path*> q) {
+  for(deque<path*>::iterator i=q.begin(); i!=q.end(); i++)
+    cout << (*i)->end->name << ", ";
+  cout << "\n";
+  cout.flush();
+}
+
+void add_paths(deque<path*> open, deque<path*> closed, deque<path*> paths) {
+  deque<path*>::iterator i,j;
+  
+  //add neighbors to open list, duplicates included
+  for(i=paths.begin(); i!=paths.end(); i++) {
+    j = find_if(closed.begin(), closed.end(), pathByName(*i));
+    if (j != closed.end()) continue; //neighbor already in closed, don't add
+    j = find_if(open.begin(), open.end(), pathByName(*i));
+    if (j != open.end()) { //found duplicate path
+      if ((*i)->cost < (*j)->cost) { //new path is shorter
+        open.erase(j); //erase old path
+        open.push_back(*i); //add new path
+      } else continue; //old path is shorter; don't add new one
+    } else {
+      open.push_back(*i); //neither already closed nor dup, add to open list
+    }
+  }
+}
+
+soln *astar(city* start, city* dest) {
   deque<path*>::iterator i,j;
   deque<path*> open,closed;
-  goal = find_city(dest);
-  if (goal == NULL)
-    cerr << "Error: goal city " << dest << " could not be found.";
+  goal = dest;
 
   path* s = new path;
   s->prev = NULL;
-  s->end = find_city(start);
+  s->end = start;
   s->cost = 0;
   open.push_back(s);
 
-  if (s->end == NULL)
-    cerr << "Error: start city " << start << " could not be found.";
-  
   while(!open.empty()) {
     path *cur = open.front();
-    cout << cur->end->name;
-    cout.flush();
     open.pop_front();
     closed.push_back(cur);
 
     if (cur->end->name == goal->name) {
-      cout << "Found goal!";
-      return cur;
+      soln* s = new soln;
+      s->p = cur;
+      s->closed = closed;
+      return s;
     }
 
     deque<path*>n = neighbors(cur);
 
-    //add neighbors to open list, duplicates included
-    open.insert(open.end(), n.begin(), n.end());
-
-    //remove paths that go to same city
-    for(i=open.begin(); i!=open.end();) {
-      if (*i == NULL) continue;
-      j = find_if(closed.begin(), closed.end(), pathByName(*i));
-      if (j != closed.end()) {
-        open.erase(i);
-      } else {
-        j = find_if(open.begin(), open.end(), pathByName(*i));
-        if (j != open.end() && j != i) { //found match, not the same item
-          if ((*i)->cost < (*j)->cost) {
-            open.erase(j);
-          } else {
-            open.erase(i);
-          }
-        } else {
-          i++;
-        }
-      }
-    }
+    add_paths(open,closed,n);
 
     sort(open.begin(), open.end(), astar_compare);
   }
 }
 
+soln* greedy(city* start, city* dest) {
+  deque<path*>::iterator i,j;
+  deque<path*> open,closed;
+  goal = dest;
+}
+
+soln* dynamic(city* start, city* dest) {
+}
+
 void print_path(path* p) {
   deque<string> names;
   while(p != NULL && p->end != NULL) {
-    cout << p->end->name; cout.flush();
     names.push_front(p->end->name);
     p = p->prev;
   }
@@ -185,6 +207,14 @@ void print_path(path* p) {
   }
 }
 
+void print_soln(soln* s) {
+  cout << "Number of expanded nodes: " << s->closed.size() << "\n";
+  cout << "Expanded nodes: "; print_queue(s->closed); cout <<"\n";
+  cout << "Number of path nodes: " << path_count(s->p) << "\n";
+  cout << "Path length: " << s->p->cost << "\n";
+  cout << "Path: "; print_path(s->p); cout << "\n";
+}
+
 int main (int argc, char* argv[])
 {
   make_cities();
@@ -192,10 +222,27 @@ int main (int argc, char* argv[])
 
   if (argc < 4) {
     cout << "Please use ./a.out [astar|greedy|dynamic] [start] [destination]\n";
-  } else if (strcmp(argv[1], "astar")==0) {
-    print_path(astar(argv[2], argv[3]));
   } else {
-    cout << "Please use ./a.out [astar|greedy|dynamic] [start] [destination]\n";
+    city* start = find_city(argv[2]);
+    if (start == NULL)
+      cerr << "Error: start city " << start << " could not be found.";
+
+    city* dest = find_city(argv[3]);
+    if (dest == NULL)
+      cerr << "Error: destination city " << dest << " could not be found.";
+    
+    if (strcmp(argv[1], "astar")==0) {
+      soln* s = astar(start, dest);
+      print_soln(s);
+    } else if (strcmp(argv[1], "greedy")==0) {
+      soln* s = greedy(start, dest);
+      print_soln(s);
+    } else if (strcmp(argv[1], "dynamic")==0) {
+      soln* s = dynamic(start, dest);
+      print_soln(s);
+    } else {
+      cout << "Please use ./a.out [astar|greedy|dynamic] [start] [destination]\n";
+    }
   }
 }
 
